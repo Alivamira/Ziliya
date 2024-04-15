@@ -1,0 +1,107 @@
+---
+title: "Untitled"
+author: "Чайка З.С,"
+date: "2024-04-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(DescTools)
+library(tidyverse)
+library(qqplotr)
+library(psych)
+library(dplyr)
+library(ggplot2)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+
+wbc <- read.csv("wisconsin_breast_cancer.csv")
+wbc
+
+```
+```{r}
+# Создание регрессионной модели
+model <- lm(radius_mean ~ area_mean + perimeter_mean + symmetry_mean, data = wbc)
+
+# Вывод результатов
+summary(model)
+```
+```{r}
+# Построение графиков
+ggplot(wbc, aes(x = area_mean, y = radius_mean)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +
+  labs(title = "Зависимость среднего радиуса опухоли от средней площади")
+
+ggplot(wbc, aes(x = perimeter_mean, y = radius_mean)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +
+  labs(title = "Зависимость среднего радиуса опухоли от среднего периметра")
+
+ggplot(wbc, aes(x = symmetry_mean, y = radius_mean)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +
+  labs(title = "Зависимость среднего радиуса опухоли от средней симметричности")
+```
+
+##комментарии
+Эта модель регрессии показывает связь между радиусом опухоли и показателями area_mean, perimeter_mean и symmetry_mean опухоли.
+
+Коэффициенты модели:
+
+intercept (константа) составляет 2.0101598. Это означает, что при нулевых значениях площади, периметра и симметрии опухоли, средний радиус опухоли составляет 2.01.
+Параметр area_mean имеет коэффициент 0.0007378, что означает, что каждый дополнительный квадратный метр площади опухоли связан с увеличением среднего радиуса на 0.0007378.
+Параметр perimeter_mean имеет коэффициент 0.1350754, что означает, что каждый дополнительный миллиметр периметра опухоли связан с увеличением среднего радиуса на 0.1350754.
+Параметр symmetry_mean имеет коэффициент -4.3541675, что означает, что с увеличением симметрии опухоли, средний радиус опухоли уменьшается на 4.3541675.
+Статистика модели:
+
+Multiple R-squared показывает, что примерно 99.71% вариации в радиусе опухоли объясняется показателями area_mean, perimeter_mean и symmetry_mean.
+Adjusted R-squared корректирует R-squared на количество предикторов в модели и на размер выборки.
+F-статистика позволяет оценить значимость модели в целом. На основе данного значения (6.511e+04) и p-value (< 2.2e-16) можно утверждать, что модель имеет статистическую значимость.
+В целом, модель регрессии хорошо объясняет вариацию в радиусе опухоли на основе площади, периметра и симметрии опухоли. Каждый из этих показателей имеет значимое влияние на радиус опухоли с учетом остальных переменных в модели.
+```{r}
+str(wbc)
+```
+```{r}
+wbc <- wbc %>%
+    mutate(diagnosis = as.factor(diagnosis))
+wbc$diagnosis <- ifelse(wbc$diagnosis == "M", 1, 0)
+```
+```{r}
+#модель, которая прогнозирует вероятность возникновения злокачественной опухоли от всех трех  факторов
+model_all <- glm(diagnosis ~ radius_mean + area_mean + texture_mean, data = wbc)
+
+#выводим результаты модели
+summary(model_all)
+```
+```{r}
+# график зависимости вероятности злокачественной опухоли от среднего радиуса
+ggplot(wbc, aes(x = radius_mean, y = diagnosis)) + 
+  geom_point() + 
+  geom_smooth(method = "glm", formula = y ~ x, se = FALSE)
+
+```
+```{r}
+#график зависимости вероятности злокачественной опухоли от средней площади
+ggplot(wbc, aes(x = area_mean, y = diagnosis)) + 
+  geom_point() + 
+  geom_smooth(method = "glm",  se = FALSE)
+```
+```{r}
+#график зависимости вероятности злокачественной опухоли от средней текстуры
+ggplot(wbc, aes(x = texture_mean, y = diagnosis)) + 
+  geom_point() + 
+  geom_smooth(method = "glm", se = FALSE)
+```
+```{r}
+
+```
