@@ -1,0 +1,151 @@
+---
+title: "Untitled"
+author: "Чайка З.С,"
+date: "2024-04-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(TrialSize)
+library(PowerTOST)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+
+
+
+
+```{r}
+#Задание 1.
+# Рассчитайте выборку для исследования терапевтической эквивалентности для двухпериодного cross-over дизайна. Из предыдущих исследований известно, что дисперсия составляет 20%, а разница средних составляет −10%. Клиницисты сообщают нам, что клинически значимая разница составляет 25%. РАсчет по формуле  задании.
+power <- 0.8
+alpha <- 0.05
+drop_out_rate <- 0.1
+variance <- 0.2
+mean_diff <- -0.1
+clinical_diff <- 0.25
+
+# Расчет стандартного отклонения
+sigma <- sqrt(variance)
+
+# Расчет критического значения Z
+Z_alpha <- qnorm(1-alpha/2)
+Z_beta <- qnorm(power)
+# Расчет размера выборки
+n <- ((Z_alpha + Z_beta)^2 * variance) / 2*(clinical_diff - mean_diff)^2
+# расчет drop-out rate = 10%.
+n_a <- n / (1 - drop_out_rate)
+n_adjusted = n_a + n_a
+# Вывод результатов
+print(n_adjusted)
+
+# не понимаю, что не так, поэтому ниже попробовала провести расчет по формуле, которую нашла в интернете.
+```
+```{r}
+# ЗАдание 1. Для расчета выборки использовала  формулу для двухпериодного cross-over дизайна: n = (2 * (Z_α/2 + Z_β)^2 * σ^2) / (clinical_diff - mean_diff)^2  (результат мне больше понравился)
+power <- 0.8
+alpha <- 0.05
+drop_out_rate <- 0.1
+variance <- 0.2
+mean_diff <- -0.1
+clinical_diff <- 0.25
+
+# Расчет стандартного отклонения
+sigma <- sqrt(variance)
+
+# Расчет критического значения Z
+Z_alpha <- qnorm(1-alpha/2)
+Z_beta <- qnorm(power)
+# Расчет размера выборки
+n <- (2 * (Z_alpha + Z_beta)^2 * variance) / (clinical_diff - mean_diff)^2
+
+# Расчет окончательного размера выборки с учетом drop-out rate
+n_f <- n / (1 - drop_out_rate)
+
+n_final = n_f + n_f
+n_final
+
+
+```
+ 
+```{r}
+#Задание 2
+#Для расчета выборки для  гипотезы non-inferior  yдля двухвыборочного параллельного дизайна
+
+power <- 0.8
+alpha <- 0.05
+drop_out_rate <- 0.1
+#доля ответов для тестового препарата
+p_2 <- 0.65
+#доля ответов у препарата сравнения
+p_1 <- 0.85
+#клинически значимая разница
+delta <- - 0.1
+# Расчет критического значения Z
+Z_alpha <- qnorm(1-alpha/2)
+Z_beta <- qnorm(power)
+
+#Рассчитайте выборку для гипотезы non-inferiority для двухвыборочного параллельного дизайна
+
+n <- (Z_alpha + Z_beta)^2 * (p_1 * (1 - p_1) + p_2 * (1 - p_2)) / (p_2 - p_1 - delta)^2
+# Расчет окончательного размера выборки с учетом drop-out rate
+n_2 <- n / (1 - drop_out_rate)
+n_av <- n_2 + n_2
+n_av
+```
+```{r}
+# Задание 3
+# pассчет  выборки для гипотезы equality
+Cox.Equality(
+  alpha = 0.05,
+  beta = 0.2,
+  loghr = log(2), 
+  p1 = 0.5, 
+  d = 0.8) 
+```
+```{r}
+# Задание 3
+# pассчет  выборки для гипотезы equality по формуле в задании
+
+power <- 0.8
+alpha <- 0.05
+HR <- 2 
+p1 <- p2 <- 0.5
+d <- 0.8
+Z_alpha <- qnorm(1-alpha/2)
+Z_beta <- qnorm(power)
+
+n <- (Z_alpha + Z_beta)^2 / log(HR)^2 * p1 *  p2 * d
+# Расчет окончательного размера выборки с учетом drop-out rate
+n_3 <- n + n
+n_3
+
+
+```
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+
+```{r}
+# Попытка рассчитать выборку для исследования терапевтической эквивалентности для двухпериодного cross-over дизайна. (из задания 1)
+TwoSampleCrossOver.Equivalence(
+  alpha = 0.05,
+  beta = 0.2,
+  sigma = 0.2, 
+  delta = 0.25, 
+  margin = -0.1) 
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
